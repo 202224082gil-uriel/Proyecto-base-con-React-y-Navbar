@@ -1,5 +1,7 @@
 // src/services/dataServices.js
 
+import apiClient from './apiClient';
+
 // Simulamos un JSON local (puedes cambiarlo por tus propios datos)
 const datosSimulados = [
   { id: 1, categoria: "Tecnología", producto: "Laptop HP", ventas: 150, precio: 15000 },
@@ -36,4 +38,30 @@ export const procesarDatos = (datos) => {
     categoriasUnicas,
     datosFiltrados: datos // Aquí podrías filtrar si lo requieres
   };
+};
+
+// NUEVA FUNCIÓN PARA LA PRÁCTICA 3
+export const obtenerPrediccionClimatica = async (latitud, longitud) => {
+    try {
+        // Hacemos la petición GET usando Axios
+        const respuesta = await apiClient.get('/forecast', {
+            params: {
+                latitude: latitud,
+                longitude: longitud,
+                current_weather: true,
+            }
+        });
+        
+        // Extraemos solo lo que nos interesa (payload limpio)
+        const clima = respuesta.data.current_weather;
+        return {
+            temperatura: clima.temperature,
+            viento: clima.windspeed,
+            direccionViento: clima.winddirection,
+            hora: clima.time
+        };
+    } catch (error) {
+        console.error("Error al consumir la API:", error);
+        throw new Error("No se pudo conectar con el servicio de análisis climático.");
+    }
 };

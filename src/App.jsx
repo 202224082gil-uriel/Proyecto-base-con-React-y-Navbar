@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { obtenerDatosVisualizacion, procesarDatos } from './services/dataService';
 import TarjetaMetrica from './components/TarjetaMetrica';
 import TablaDatos from './components/TablaDatos';
+import PanelAnalitico from './components/PanelAnalitico'; 
 
 function App() {
   // Estados para manejar los datos crudos y los procesados
@@ -53,19 +54,22 @@ function App() {
     <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
       <h1 style={{ textAlign: 'center', color: '#2c3e50' }}>Dashboard de Análisis de Ventas</h1>
       
-      {/* Sección de Tarjetas Métricas */}
+      {/* 1. Sección de Tarjetas Métricas (Práctica 2) */}
       <div style={contenedorMetricas}>
-        {/* Renderizamos 3 instancias de TarjetaMetrica con diferentes métricas */}
         <TarjetaMetrica titulo="Ventas Totales" valor={datosProcesados.totalVentas} />
         <TarjetaMetrica titulo="Ingresos Totales" valor={`$${datosProcesados.ingresosTotales}`} />
         <TarjetaMetrica titulo="Categorías Únicas" valor={datosProcesados.categoriasUnicas} />
       </div>
 
-      {/* Sección de Tabla */}
-      <div>
+      {/* 2. Sección de Tabla (Práctica 2) */}
+      <div style={{ marginBottom: '40px' }}>
         <h2 style={{ color: '#2c3e50' }}>Detalle de Productos</h2>
         <TablaDatos datos={datosProcesados.datosFiltrados} />
       </div>
+
+      {/* 3. NUEVO COMPONENTE: Panel Analítico con API Externa (Práctica 3) */}
+      <PanelAnalitico />
+
     </div>
   );
 }
