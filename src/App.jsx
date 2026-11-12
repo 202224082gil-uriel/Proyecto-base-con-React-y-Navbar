@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { obtenerDatosVisualizacion, procesarDatos } from './services/dataService';
 import TarjetaMetrica from './components/TarjetaMetrica';
 import TablaDatos from './components/TablaDatos';
-import PanelAnalitico from './components/PanelAnalitico'; 
+import PanelAnalitico from './components/PanelAnalitico';
+import DashboardLayout from './components/DashboardLayout';
+import PanelFiltros from './components/PanelFiltros';
 
 function App() {
-  // Estados para manejar los datos crudos y los procesados
   const [cargando, setCargando] = useState(true);
+  const [datosCrudos, setDatosCrudos] = useState([]); 
   const [datosProcesados, setDatosProcesados] = useState({
     totalVentas: 0,
     ingresosTotales: 0,
@@ -15,62 +17,73 @@ function App() {
     datosFiltrados: []
   });
 
-  // Hook useEffect para ejecutar la petición al montar el componente
+  // ESTADO GLOBAL DE FILTROS (Ahora incluye la fecha vacía)
+  const [filtros, setFiltros] = useState({ categoria: 'todas', fecha: '' });
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        // 1. Obtenemos los datos del servicio
-        const datosCrudos = await obtenerDatosVisualizacion();
-        
-        // 2. Los procesamos
-        const datosListos = procesarDatos(datosCrudos);
-        
-        // 3. Actualizamos el estado
-        setDatosProcesados(datosListos);
+        const datos = await obtenerDatosVisualizacion();
+        setDatosCrudos(datos);
         setCargando(false);
       } catch (error) {
         console.error("Error al cargar los datos:", error);
         setCargando(false);
       }
     };
-
     cargarDatos();
-  }, []); // El arreglo vacío indica que solo se ejecute una vez al montar
+  }, []);
+
+  // EFECTO QUE ESCUCHA LOS FILTROS
+  useEffect(() => {
+    if (datosCrudos.length === 0) return;
+
+    let datosFiltrados = datosCrudos;
+
+    // 1. Filtrar por categoría
+    if (filtros.categoria !== 'todas') {
+      datosFiltrados = datosFiltrados.filter(d => d.categoria === filtros.categoria);
+    }
+
+    // 2. Filtrar por fecha (Si el usuario eligió una fecha)
+    if (filtros.fecha !== '') {
+      datosFiltrados = datosFiltrados.filter(d => {
+          // Compara si la fecha del producto es mayor o igual a la fecha seleccionada
+          return new Date(d.fecha) >= new Date(filtros.fecha);
+      });
+    }
+
+    // Procesamos los datos resultantes (recalcula las métricas)
+    const datosListos = procesarDatos(datosFiltrados);
+    setDatosProcesados(datosListos);
+
+  }, [filtros, datosCrudos]); 
 
   if (cargando) {
-    return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Cargando datos...</h2>;
+    return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Cargando Dashboard...</h2>;
   }
 
-  // Estilos para la estructura principal
-  const contenedorMetricas = {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    marginBottom: '40px',
-    flexWrap: 'wrap'
-  };
-
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
-      <h1 style={{ textAlign: 'center', color: '#2c3e50' }}>Dashboard de Análisis de Ventas</h1>
+    <DashboardLayout sidebar={<PanelFiltros filtros={filtros} setFiltros={setFiltros} />}>
       
-      {/* 1. Sección de Tarjetas Métricas (Práctica 2) */}
-      <div style={contenedorMetricas}>
+      <h1 style={{ margin: 0, color: '#2c3e50' }}>Dashboard de Análisis de Ventas</h1>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
         <TarjetaMetrica titulo="Ventas Totales" valor={datosProcesados.totalVentas} />
         <TarjetaMetrica titulo="Ingresos Totales" valor={`$${datosProcesados.ingresosTotales}`} />
         <TarjetaMetrica titulo="Categorías Únicas" valor={datosProcesados.categoriasUnicas} />
       </div>
 
-      {/* 2. Sección de Tabla (Práctica 2) */}
-      <div style={{ marginBottom: '40px' }}>
-        <h2 style={{ color: '#2c3e50' }}>Detalle de Productos</h2>
+      <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}>
+        <h2 style={{ marginTop: 0, color: '#2c3e50' }}>Detalle de Productos</h2>
         <TablaDatos datos={datosProcesados.datosFiltrados} />
       </div>
 
-      {/* 3. NUEVO COMPONENTE: Panel Analítico con API Externa (Práctica 3) */}
-      <PanelAnalitico />
+      <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}>
+         <PanelAnalitico />
+      </div>
 
-    </div>
+    </DashboardLayout>
   );
 }
 

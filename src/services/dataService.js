@@ -2,15 +2,18 @@
 
 import apiClient from './apiClient';
 
-// Simulamos un JSON local (puedes cambiarlo por tus propios datos)
+// src/services/dataService.js
+
 const datosSimulados = [
-  { id: 1, categoria: "Tecnología", producto: "Laptop HP", ventas: 150, precio: 15000 },
-  { id: 2, categoria: "Tecnología", producto: "Mouse Inalámbrico", ventas: 300, precio: 300 },
-  { id: 3, categoria: "Oficina", producto: "Silla Gamer", ventas: 50, precio: 4500 },
-  { id: 4, categoria: "Oficina", producto: "Escritorio", ventas: 80, precio: 2500 },
-  { id: 5, categoria: "Tecnología", producto: "Monitor 24", ventas: 120, precio: 3500 },
+  { id: 1, categoria: "Tecnología", producto: "Laptop HP", ventas: 150, precio: 15000, fecha: "2023-10-15" },
+  { id: 2, categoria: "Tecnología", producto: "Mouse Inalámbrico", ventas: 300, precio: 300, fecha: "2023-10-18" },
+  { id: 3, categoria: "Oficina", producto: "Silla Gamer", ventas: 50, precio: 4500, fecha: "2023-10-20" },
+  { id: 4, categoria: "Oficina", producto: "Escritorio", ventas: 80, precio: 2500, fecha: "2023-10-22" },
+  { id: 5, categoria: "Tecnología", producto: "Monitor 24", ventas: 120, precio: 3500, fecha: "2023-10-25" },
+  { id: 6, categoria: "Tecnología", producto: "Teclado Mecánico", ventas: 200, precio: 800, fecha: "2023-10-28" },
 ];
 
+// ... (el resto de las funciones obtenerDatosVisualizacion y procesarDatos se quedan igual)
 // 1. Función que simula la petición HTTP
 export const obtenerDatosVisualizacion = () => {
   return new Promise((resolve) => {
