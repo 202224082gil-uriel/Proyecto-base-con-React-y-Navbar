@@ -68,3 +68,17 @@ export const obtenerPrediccionClimatica = async (latitud, longitud) => {
         throw new Error("No se pudo conectar con el servicio de análisis climático.");
     }
 };
+
+export const formatearParaGrafico = (datosCrudos) => {
+    // 1. Manejo de casos vacíos
+    if (!datosCrudos || datosCrudos.length === 0) {
+        return { labels: [], values: [] };
+    }
+
+    // 2. Extraer estructuras (Ejemplo: Nombres de productos y sus ventas)
+    // Puedes adaptarlo para extraer fechas o categorías si lo prefieres
+    const labels = datosCrudos.map(item => item.producto);
+    const values = datosCrudos.map(item => item.ventas);
+
+    return { labels, values };
+};
